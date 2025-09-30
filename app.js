@@ -38,8 +38,11 @@ document.addEventListener('DOMContentLoaded', () => {
         populateCategorySelect();
         renderHistory();
         renderFavorites();
-        generateIdea();
         setupEventListeners();
+        // Generate initial idea after everything is set up
+        setTimeout(() => {
+            generateIdea();
+        }, 100);
     }
 
     // --- Data Management ---
@@ -47,15 +50,18 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const rawIdeas = localStorage.getItem('ideas');
             if (rawIdeas) {
-                ideaStore = JSON.parse(rawIdeas) || {};
+                const storedIdeas = JSON.parse(rawIdeas);
+                // Merge stored ideas with default ideas, ensuring we have the base ideas
+                ideaStore = { ...ideas, ...storedIdeas };
             } else {
-                // Fallback to a global 'ideas' variable if it exists
-                ideaStore = (typeof ideas !== 'undefined') ? ideas : {};
+                // Use the global 'ideas' variable as default
+                ideaStore = { ...ideas };
                 saveIdeasToStorage();
             }
         } catch (error) {
             console.warn('Failed to load ideas from localStorage', error);
-            ideaStore = (typeof ideas !== 'undefined') ? ideas : {};
+            // Fallback to global ideas variable
+            ideaStore = { ...ideas };
         }
     }
 
@@ -193,6 +199,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function populateCategorySelect() {
         if (!categorySelect) return;
+        
+        // Ensure we have categories to display
+        if (!ideaStore || Object.keys(ideaStore).length === 0) {
+            console.warn('No idea store available for select, using default ideas');
+            ideaStore = { ...ideas };
+        }
+        
         categorySelect.innerHTML = "";
         for (const category in ideaStore) {
             const option = document.createElement("option");
@@ -204,6 +217,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderCategoryButtons() {
         if (!categoryButtonsContainer) return;
+        
+        // Ensure we have categories to display
+        if (!ideaStore || Object.keys(ideaStore).length === 0) {
+            console.warn('No idea store available, using default ideas');
+            ideaStore = { ...ideas };
+        }
+        
         categoryButtonsContainer.innerHTML = '';
         Object.keys(ideaStore).forEach(category => {
             const button = document.createElement('button');
@@ -218,6 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const firstButton = categoryButtonsContainer.querySelector('.category-btn');
         if (firstButton) {
             firstButton.classList.add('active');
+            currentCategory = firstButton.dataset.category;
         }
     }
 
@@ -329,6 +350,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Core Logic ---
     function generateIdea() {
+        // Ensure we have a valid current category
+        if (!currentCategory || !ideaStore[currentCategory]) {
+            const availableCategories = Object.keys(ideaStore);
+            if (availableCategories.length > 0) {
+                currentCategory = availableCategories[0];
+                updateActiveCategoryButton(currentCategory);
+            } else {
+                console.error('No categories available');
+                if (ideaDisplay) {
+                    ideaDisplay.textContent = 'No categories available. Please refresh the page.';
+                }
+                return;
+            }
+        }
+
         if (!ideaStore[currentCategory] || ideaStore[currentCategory].length === 0) {
             if (ideaDisplay) {
                 ideaDisplay.textContent = `No ideas in '${currentCategory}' yet. Submit one!`;
@@ -623,4 +659,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (increaseFontBtn) {
             increaseFontBtn.addEventListener('click', increaseFontSize);
         }
+    }
+
+    // --- Run Application ---
+    initialize();
+    
+    // Debug helper: Add ?reset to URL to clear localStorage
+    if (typeof window !== 'undefined' && window.location.search.includes('reset')) {
+        localStorage.clear();
+        window.location.href = window.location.pathname;
+    }
 });
