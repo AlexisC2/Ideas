@@ -4,10 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Random Idea Generator</title>
+<meta name="description" content="A simple and fun random idea generator.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/dompurify@2.3.4/dist/purify.min.js"></script>
 </head>
 <body>
   <div id="toast-notification">Idea copied to clipboard!</div>
@@ -17,7 +19,7 @@
       <!-- Theme switcher -->
       <div class="theme-switcher-container" aria-hidden="false">
         <label class="theme-switcher" for="theme-toggle">
-          <input type="checkbox" id="theme-toggle" aria-label="Toggle dark mode">
+          <input type="checkbox" id="theme-toggle" aria-label="Toggle dark mode" aria-describedby="theme-description">
           <span class="slider" aria-hidden="true"></span>
         </label>
       </div>
@@ -27,6 +29,7 @@
       <!-- Left: History -->
       <aside id="history-panel" class="panel" aria-label="Recent ideas">
         <h3>Recent ideas</h3>
+        <input type="search" id="history-search" placeholder="Search history..." />
         <ul id="history-list"></ul>
       </aside>
 
@@ -34,7 +37,7 @@
       <main id="main-panel" class="panel" role="main">
         <div id="category-buttons" aria-label="Idea categories"></div>
         <div class="idea-card">
-          <button id="generateBtn" class="generate-btn">💡</button>
+          <button id="generateBtn" class="generate-btn" role="button">💡</button>
           <div id="ideaDisplay" class="idea-display" aria-live="polite">Click the button to get a random idea!</div>
           <div class="idea-actions">
             <button id="copyBtn">📋 Copy</button>
@@ -45,11 +48,17 @@
 
       <!-- Right: Submission form -->
       <aside id="submission-panel" class="panel" aria-label="Submit an idea">
-        <form id="submission-form">
+        <form id="submission-form" aria-label="New Idea Submission Form">
           <label for="idea-input">Your idea</label>
-          <input type="text" id="idea-input" placeholder="Submit your own idea...">
+          <div class="form-row">
+            <textarea id="idea-input" placeholder="Enter your brilliant idea here..." rows="3"></textarea>
+            <div id="error-message" class="error-message"></div>
+          </div>
           <label for="category-select">Category</label>
-          <select id="category-select" title="Category"></select>
+          <div class="form-row">
+            <select id="category-select" aria-label="Select a category for your idea">
+            </select>
+          </div>
           <button type="submit">Submit</button>
         </form>
       </aside>
