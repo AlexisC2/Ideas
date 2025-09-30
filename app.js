@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ideaDisplay = document.getElementById("ideaDisplay");
     const copyBtn = document.getElementById("copyBtn");
     const shareBtn = document.getElementById("shareBtn");
+    const favoriteBtn = document.getElementById("favoriteBtn");
     const categoryButtonsContainer = document.getElementById("category-buttons");
     const submissionForm = document.getElementById("submission-form");
     const ideaInput = document.getElementById("idea-input");
@@ -12,22 +13,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggle = document.getElementById("theme-toggle");
     const historyList = document.getElementById("history-list");
     const historySearch = document.getElementById("history-search");
+    const favoritesList = document.getElementById("favorites-list");
     const errorDisplay = document.getElementById("error-message");
 
     // --- Application State ---
     let currentCategory = "Tech";
     let ideaStore = {};
     let ideaHistory = [];
+    let favorites = [];
     let toastTimeout;
 
     // --- Initialization ---
     function initialize() {
         loadIdeasFromStorage();
         loadHistoryFromStorage();
+        loadFavoritesFromStorage();
         loadTheme();
         renderCategoryButtons();
         populateCategorySelect();
         renderHistory();
+        renderFavorites();
         generateIdea();
         setupEventListeners();
     }
@@ -61,6 +66,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function loadFavoritesFromStorage() {
+        try {
+            const rawFavorites = localStorage.getItem('favorites');
+            if (rawFavorites) {
+                favorites = JSON.parse(rawFavorites) || [];
+            }
+        } catch (error) {
+            console.warn('Failed to load favorites from localStorage', error);
+            favorites = [];
+        }
+    }
+
     function saveIdeasToStorage() {
         try {
             localStorage.setItem('ideas', JSON.stringify(ideaStore));
@@ -74,6 +91,14 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('ideaHistory', JSON.stringify(ideaHistory));
         } catch (error) {
             console.warn('Failed to save history', error);
+        }
+    }
+
+    function saveFavoritesToStorage() {
+        try {
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+        } catch (error) {
+            console.warn('Failed to save favorites', error);
         }
     }
 
@@ -120,19 +145,44 @@ document.addEventListener('DOMContentLoaded', () => {
             controls.className = 'history-controls';
 
             const editButton = document.createElement('button');
-            editButton.textContent = 'Edit';
-            editButton.className = 'edit-btn';
+            editButton.innerHTML = '<i class="fa-solid fa-pencil"></i>';
+            editButton.className = 'edit-btn button';
             editButton.addEventListener('click', () => editIdea(idea.id, ideaText, controls));
             controls.appendChild(editButton);
 
             const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete';
-            deleteButton.className = 'delete-btn';
+            deleteButton.innerHTML = '<i class="fa-solid fa-trash"></i>';
+            deleteButton.className = 'delete-btn button';
             deleteButton.addEventListener('click', () => deleteIdea(idea.id));
             controls.appendChild(deleteButton);
 
             li.appendChild(controls);
             historyList.appendChild(li);
+        });
+    }
+
+    function renderFavorites() {
+        if (!favoritesList) return;
+        favoritesList.innerHTML = "";
+        favorites.forEach((idea, index) => {
+            const li = document.createElement("li");
+            li.dataset.id = idea.id;
+
+            const ideaText = document.createElement('span');
+            ideaText.textContent = idea.text;
+            li.appendChild(ideaText);
+
+            const controls = document.createElement('div');
+            controls.className = 'history-controls';
+
+            const deleteButton = document.createElement('button');
+            deleteButton.innerHTML = '<i class="fa-solid fa-trash"></i>';
+            deleteButton.className = 'delete-btn button';
+            deleteButton.addEventListener('click', () => removeFromFavorites(idea.id));
+            controls.appendChild(deleteButton);
+
+            li.appendChild(controls);
+            favoritesList.appendChild(li);
         });
     }
 
@@ -255,8 +305,8 @@ document.addEventListener('DOMContentLoaded', () => {
         input.focus();
 
         const saveButton = document.createElement('button');
-        saveButton.textContent = 'Save';
-        saveButton.className = 'save-btn';
+        saveButton.innerHTML = '<i class="fa-solid fa-save"></i>';
+        saveButton.className = 'save-btn button';
 
         const originalControls = controlsElement.innerHTML;
         controlsElement.innerHTML = '';
@@ -301,7 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function validateInput(text) {
         const maxLength = 280;
-        const invalidChars = /[<>()&/\\'"{}|]/;
+        const invalidChars = /[<>()&/\"'{}|]/;
 
         if (!text || text.trim() === '') {
             return "Idea cannot be empty.";
@@ -316,20 +366,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function deleteIdea(id) {
-        const ideaIndex = ideaHistory.findIndex(idea => idea.id === id);
-        if (ideaIndex > -1) {
-            const [deletedIdea] = ideaHistory.splice(ideaIndex, 1);
-            saveHistoryToStorage();
+        if (confirm('Are you sure you want to delete this idea?')) {
+            const ideaIndex = ideaHistory.findIndex(idea => idea.id === id);
+            if (ideaIndex > -1) {
+                const [deletedIdea] = ideaHistory.splice(ideaIndex, 1);
+                saveHistoryToStorage();
 
-            for (const category in ideaStore) {
-                const index = ideaStore[category].indexOf(deletedIdea.text);
-                if (index > -1) {
-                    ideaStore[category].splice(index, 1);
-                    saveIdeasToStorage();
-                    break;
+                for (const category in ideaStore) {
+                    const index = ideaStore[category].indexOf(deletedIdea.text);
+                    if (index > -1) {
+                        ideaStore[category].splice(index, 1);
+                        saveIdeasToStorage();
+                        break;
+                    }
                 }
+                renderHistory();
             }
-            renderHistory();
+        }
+    }
+
+    function addToFavorites() {
+        const ideaText = ideaDisplay.textContent;
+        if (ideaText && ideaText !== "Click the button to get a random idea!" && !ideaText.startsWith('No ideas in')) {
+            const idea = {
+                id: Date.now(),
+                text: ideaText,
+            };
+            const isDuplicate = favorites.some(fav => fav.text.toLowerCase() === idea.text.toLowerCase());
+            if (!isDuplicate) {
+                favorites.unshift(idea);
+                renderFavorites();
+                saveFavoritesToStorage();
+                showToast('Idea added to favorites!', 2000);
+            } else {
+                showToast('This idea is already in your favorites.', 2000);
+            }
+        }
+    }
+
+    function removeFromFavorites(id) {
+        const ideaIndex = favorites.findIndex(idea => idea.id === id);
+        if (ideaIndex > -1) {
+            favorites.splice(ideaIndex, 1);
+            saveFavoritesToStorage();
+            renderFavorites();
         }
     }
 
@@ -446,6 +526,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (shareBtn) {
             shareBtn.addEventListener("click", shareIdea);
+        }
+        if (favoriteBtn) {
+            favoriteBtn.addEventListener("click", addToFavorites);
         }
         if (submissionForm) {
             submissionForm.addEventListener("submit", handleIdeaSubmission);

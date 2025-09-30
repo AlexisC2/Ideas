@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Random Idea Generator</title>
 <meta name="description" content="A simple and fun random idea generator.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -37,11 +38,12 @@
       <main id="main-panel" class="panel" role="main">
         <div id="category-buttons" aria-label="Idea categories"></div>
         <div class="idea-card">
-          <button id="generateBtn" class="generate-btn" role="button">💡</button>
+          <button id="generateBtn" class="generate-btn button" role="button"><i class="fa-solid fa-lightbulb"></i></button>
           <div id="ideaDisplay" class="idea-display" aria-live="polite">Click the button to get a random idea!</div>
           <div class="idea-actions">
-            <button id="copyBtn">📋 Copy</button>
-            <button id="shareBtn">🐦 Tweet</button>
+            <button id="copyBtn" class="button"><i class="fa-solid fa-copy"></i> Copy</button>
+            <button id="shareBtn" class="button"><i class="fa-brands fa-twitter"></i> Tweet</button>
+            <button id="favoriteBtn" class="button"><i class="fa-solid fa-star"></i> Favorite</button>
           </div>
         </div>
       </main>
@@ -59,8 +61,14 @@
             <select id="category-select" aria-label="Select a category for your idea">
             </select>
           </div>
-          <button type="submit">Submit</button>
+          <button type="submit" class="button"><i class="fa-solid fa-paper-plane"></i> Submit</button>
         </form>
+      </aside>
+
+      <!-- Favorites Panel -->
+      <aside id="favorites-panel" class="panel" aria-label="Favorite ideas">
+        <h3>Favorite ideas</h3>
+        <ul id="favorites-list"></ul>
       </aside>
     </div>
   </div>
