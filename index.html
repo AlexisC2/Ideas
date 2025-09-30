@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Random Idea Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="toast-notification">Idea copied to clipboard!</div>
+  <div class="container">
+    <header class="app-header">
+      <h1>Random Idea Generator</h1>
+      <!-- Theme switcher -->
+      <div class="theme-switcher-container" aria-hidden="false">
+        <label class="theme-switcher" for="theme-toggle">
+          <input type="checkbox" id="theme-toggle" aria-label="Toggle dark mode">
+          <span class="slider" aria-hidden="true"></span>
+        </label>
+      </div>
+    </header>
+
+    <div class="app-grid">
+      <!-- Left: History -->
+      <aside id="history-panel" class="panel" aria-label="Recent ideas">
+        <h3>Recent ideas</h3>
+        <ul id="history-list"></ul>
+      </aside>
+
+      <!-- Center: Idea display and controls -->
+      <main id="main-panel" class="panel" role="main">
+        <div id="category-buttons" aria-label="Idea categories"></div>
+        <div class="idea-card">
+          <button id="generateBtn" class="generate-btn">💡</button>
+          <div id="ideaDisplay" class="idea-display" aria-live="polite">Click the button to get a random idea!</div>
+          <div class="idea-actions">
+            <button id="copyBtn">📋 Copy</button>
+            <button id="shareBtn">🐦 Tweet</button>
+          </div>
+        </div>
+      </main>
+
+      <!-- Right: Submission form -->
+      <aside id="submission-panel" class="panel" aria-label="Submit an idea">
+        <form id="submission-form">
+          <label for="idea-input">Your idea</label>
+          <input type="text" id="idea-input" placeholder="Submit your own idea...">
+          <label for="category-select">Category</label>
+          <select id="category-select" title="Category"></select>
+          <button type="submit">Submit</button>
+        </form>
+      </aside>
+    </div>
+  </div>
+  <script src="idea.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
