@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const historySearch = document.getElementById("history-search");
     const favoritesList = document.getElementById("favorites-list");
     const errorDisplay = document.getElementById("error-message");
+    const decreaseFontBtn = document.getElementById("decrease-font");
+    const increaseFontBtn = document.getElementById("increase-font");
+    const fontSizeIndicator = document.getElementById("font-size-indicator");
 
     // --- Application State ---
     let currentCategory = "Tech";
@@ -22,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let ideaHistory = [];
     let favorites = [];
     let toastTimeout;
+    let currentFontScale = 1;
 
     // --- Initialization ---
     function initialize() {
@@ -29,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadHistoryFromStorage();
         loadFavoritesFromStorage();
         loadTheme();
+        loadFontScale();
         renderCategoryButtons();
         populateCategorySelect();
         renderHistory();
@@ -238,6 +243,76 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadTheme() {
         const savedTheme = localStorage.getItem('theme') || 'light';
         applyTheme(savedTheme);
+    }
+
+    // --- Font Scale Management ---
+    function loadFontScale() {
+        try {
+            const savedScale = localStorage.getItem('fontScale');
+            if (savedScale) {
+                currentFontScale = parseFloat(savedScale);
+                applyFontScale(currentFontScale);
+            }
+        } catch (error) {
+            console.warn('Failed to load font scale', error);
+            currentFontScale = 1;
+        }
+    }
+
+    function saveFontScale() {
+        try {
+            localStorage.setItem('fontScale', currentFontScale.toString());
+        } catch (error) {
+            console.warn('Failed to save font scale', error);
+        }
+    }
+
+    function applyFontScale(scale) {
+        document.documentElement.style.setProperty('--font-scale', scale);
+        updateFontSizeIndicator();
+    }
+
+    function updateFontSizeIndicator() {
+        if (!fontSizeIndicator) return;
+        
+        const scaleLabels = {
+            0.875: 'A',
+            1: 'A',
+            1.125: 'A',
+            1.25: 'A',
+            1.375: 'A'
+        };
+        
+        fontSizeIndicator.textContent = scaleLabels[currentFontScale] || 'A';
+        fontSizeIndicator.style.fontSize = `${16 * currentFontScale}px`;
+    }
+
+    function increaseFontSize() {
+        const scales = [0.875, 1, 1.125, 1.25, 1.375];
+        const currentIndex = scales.indexOf(currentFontScale);
+        
+        if (currentIndex < scales.length - 1) {
+            currentFontScale = scales[currentIndex + 1];
+            applyFontScale(currentFontScale);
+            saveFontScale();
+            showToast(`Font size increased to ${Math.round(currentFontScale * 100)}%`, 2000);
+        } else {
+            showToast('Maximum font size reached', 2000);
+        }
+    }
+
+    function decreaseFontSize() {
+        const scales = [0.875, 1, 1.125, 1.25, 1.375];
+        const currentIndex = scales.indexOf(currentFontScale);
+        
+        if (currentIndex > 0) {
+            currentFontScale = scales[currentIndex - 1];
+            applyFontScale(currentFontScale);
+            saveFontScale();
+            showToast(`Font size decreased to ${Math.round(currentFontScale * 100)}%`, 2000);
+        } else {
+            showToast('Minimum font size reached', 2000);
+        }
     }
 
     function filterHistory() {
@@ -542,8 +617,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (historySearch) {
             historySearch.addEventListener('input', filterHistory);
         }
-    }
-
-    // --- Run Application ---
-    initialize();
+        if (decreaseFontBtn) {
+            decreaseFontBtn.addEventListener('click', decreaseFontSize);
+        }
+        if (increaseFontBtn) {
+            increaseFontBtn.addEventListener('click', increaseFontSize);
+        }
 });

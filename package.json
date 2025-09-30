@@ -1,0 +1,40 @@
+{
+  "name": "random-idea-generator",
+  "version": "0.5.0",
+  "description": "A professional random idea generator with enhanced design and accessibility features",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "dev": "python -m http.server 8080"
+  },
+  "keywords": [
+    "ideas",
+    "creativity",
+    "generator",
+    "productivity",
+    "web-app",
+    "javascript",
+    "html",
+    "css"
+  ],
+  "author": "GitHub Copilot CLI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AlexisC2/Ideas.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AlexisC2/Ideas/issues"
+  },
+  "homepage": "https://github.com/AlexisC2/Ideas#readme",
+  "dependencies": {},
+  "devDependencies": {},
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/dompurify@2.3.4/dist/purify.min.js"></script>
 </head>
@@ -17,12 +17,24 @@
   <div class="container">
     <header class="app-header">
       <h1>Random Idea Generator</h1>
-      <!-- Theme switcher -->
-      <div class="theme-switcher-container" aria-hidden="false">
-        <label class="theme-switcher" for="theme-toggle">
-          <input type="checkbox" id="theme-toggle" aria-label="Toggle dark mode" aria-describedby="theme-description">
-          <span class="slider" aria-hidden="true"></span>
-        </label>
+      <div class="header-controls">
+        <!-- Font size controls -->
+        <div class="font-size-controls" aria-label="Font size controls">
+          <button id="decrease-font" class="font-control-btn" aria-label="Decrease font size" title="Decrease font size">
+            <i class="fa-solid fa-minus"></i>
+          </button>
+          <span id="font-size-indicator" class="font-size-indicator">A</span>
+          <button id="increase-font" class="font-control-btn" aria-label="Increase font size" title="Increase font size">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+        <!-- Theme switcher -->
+        <div class="theme-switcher-container" aria-hidden="false">
+          <label class="theme-switcher" for="theme-toggle">
+            <input type="checkbox" id="theme-toggle" aria-label="Toggle dark mode" aria-describedby="theme-description">
+            <span class="slider" aria-hidden="true"></span>
+          </label>
+        </div>
       </div>
     </header>
 
